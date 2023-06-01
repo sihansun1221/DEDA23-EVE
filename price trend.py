@@ -49,6 +49,11 @@ df = df.sort_values('history_date')
 # Calculate the cumulative sum of price changes
 df['Price'] = (1 + df['Real Price Change']).cumprod()
 
+# Print the inflation rate as a vector
+inflation_rate = df['Real Price Change'].values
+inflation_rate_str = ', '.join([str(rate) for rate in inflation_rate])
+print("Inflation Rate:", inflation_rate_str)
+
 # Plot the price trend
 plt.figure(figsize=(10, 6))
 plt.plot(df['history_date'], df['Price'])

@@ -37,3 +37,5 @@ plt.ylabel('Value')
 plt.title('Simulated Paths of $m_t$ and $p_t$')
 plt.legend()
 plt.show()
+
+print()
