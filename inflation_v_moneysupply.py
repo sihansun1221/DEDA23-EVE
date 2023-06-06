@@ -2,8 +2,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 
-
-#INFLATION RATE CALCULATION 
+# INFLATION RATE CALCULATION
 # Create a DataFrame from the provided data
 data = {
     'history_date': [
@@ -73,23 +72,17 @@ inflation_rate_truncated = inflation_rate[:len(rate_of_change_vector)]
 def plot_inflation_vs_money_supply(inflation_rate, money_supply):
     months = range(len(inflation_rate))
 
-    fig, ax1 = plt.subplots()
+    fig, (ax1, ax2) = plt.subplots(2, 1, sharex=True)
 
-    color = 'tab:red'
-    ax1.set_xlabel('Month')
-    ax1.set_ylabel('Inflation Rate', color=color)
-    ax1.plot(months, inflation_rate, color=color)
-    ax1.tick_params(axis='y', labelcolor=color)
+    ax1.set_ylabel('Inflation Rate')
+    ax1.plot(months, inflation_rate, color='red')
 
-    ax2 = ax1.twinx()  # instantiate a second axes that shares the same x-axis
+    ax2.set_ylabel('Money Supply')
+    ax2.plot(months, money_supply, color='blue')
 
-    color = 'tab:blue'
-    ax2.set_ylabel('Money Supply', color=color)
-    ax2.plot(months, money_supply, color=color)
-    ax2.tick_params(axis='y', labelcolor=color)
+    fig.suptitle('Inflation Rate vs Money Supply')
+    plt.xlabel('Month')
 
-    fig.tight_layout()  # otherwise the right y-label is slightly clipped
-    plt.title('Inflation Rate vs Money Supply')
     plt.show()
 
 

@@ -16,53 +16,66 @@ cpi_change = cpi_data['price_change'].values
 # Filter money supply data for first day of each month
 money_supply_first_day = money_supply[money_supply_dates.isin(cpi_dates)]
 
-# Define parameters
-initial_money_supply = money_supply_first_day[0]
-inflation_coefficient = 0.02  # Coefficient linking money growth to inflation
-expected_inflation = 0.03  # Initial expected inflation rate
-time_periods = min(len(cpi_change), len(money_supply_first_day))
+# Define parameter ranges
+inflation_coefficients = [0.01, 0.02, 0.03]  # Coefficient linking money growth to inflation
+initial_expected_inflation_values = [0.02, 0.03, 0.04]  # Initial expected inflation rates
 
-# Initialize arrays to store results
-inflation_rate = np.zeros(time_periods)
-expected_inflation_rate = np.zeros(time_periods)
-updated_money_supply = np.zeros(time_periods+1)
+# Iterate over parameter combinations
+for inflation_coefficient in inflation_coefficients:
+    for initial_expected_inflation in initial_expected_inflation_values:
+        # Define parameters
+        initial_money_supply = money_supply_first_day[0]
+        time_periods = min(len(cpi_change), len(money_supply_first_day))
 
-# Set initial money supply
-updated_money_supply[0] = initial_money_supply
+        # Initialize arrays to store results
+        inflation_rate = np.zeros(time_periods)
+        expected_inflation_rate = np.zeros(time_periods)
+        updated_money_supply = np.zeros(time_periods + 1)
 
-# Simulate the Cagan model
-for t in range(1, time_periods+1):
-    # Calculate current inflation rate based on CPI change
-    current_inflation = cpi_change[t-1] / 100.0
-    
-    # Update expected inflation rate based on previous period's expectation
-    expected_inflation_rate[t-1] = expected_inflation
-    
-    # Calculate new expected inflation rate based on current inflation and previous expectation
-    expected_inflation = expected_inflation + 0.5 * (current_inflation - expected_inflation)
-    
-    # Calculate money growth based on the Cagan model equation
-    money_growth = (1 + current_inflation) / (1 + expected_inflation) - 1
-    
-    # Update money supply by applying money growth
-    updated_money_supply[t] = updated_money_supply[t-1] * (1 + money_growth)
-    
-    # Calculate actual inflation rate using the Cagan model equation
-    inflation_rate[t-1] = (updated_money_supply[t] / updated_money_supply[t-1]) - 1
+        # Set initial money supply
+        updated_money_supply[0] = initial_money_supply
 
-# Convert time_periods to corresponding dates
-start_date = pd.to_datetime(cpi_dates.iloc[0])
-dates = pd.date_range(start=start_date, periods=time_periods, freq='M')
+        # Set initial expected inflation
+        expected_inflation = initial_expected_inflation
 
-# Plot the results
-fig, ax = plt.subplots()
-ax.plot(dates, inflation_rate, label='Actual Inflation')
-ax.plot(dates, expected_inflation_rate, label='Expected Inflation')
-ax.xaxis.set_major_locator(mdates.YearLocator())
-ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m'))
-plt.xlabel('Time')
-plt.ylabel('Inflation Rate')
-plt.legend()
-plt.xticks(rotation=45)
-plt.tight_layout()
-plt.show()
+        # Simulate the Cagan model
+        for t in range(1, time_periods + 1):
+            # Calculate current inflation rate based on CPI change
+            current_inflation = cpi_change[t - 1] / 100.0
+
+            # Update expected inflation rate based on previous period's expectation
+            expected_inflation_rate[t - 1] = expected_inflation
+
+            # Calculate new expected inflation rate based on current inflation and previous expectation
+            expected_inflation = expected_inflation + 0.5 * (current_inflation - expected_inflation)
+
+            # Calculate money growth based on the Cagan model equation
+            money_growth = (1 + current_inflation) / (1 + expected_inflation) - 1
+
+            # Update money supply by applying money growth
+            updated_money_supply[t] = updated_money_supply[t - 1] * (1 + money_growth)
+
+            # Calculate actual inflation rate using the Cagan model equation
+            inflation_rate[t - 1] = (updated_money_supply[t] / updated_money_supply[t - 1]) - 1
+
+        # Convert time_periods to corresponding dates
+        start_date = pd.to_datetime(cpi_dates.iloc[0])
+        dates = pd.date_range(start=start_date, periods=time_periods, freq='M')
+
+        # Plot the results
+        fig, ax = plt.subplots()
+        ax.plot(dates, inflation_rate, label='Actual Inflation')
+        ax.plot(dates, expected_inflation_rate, label='Expected Inflation')
+        ax.xaxis.set_major_locator(mdates.YearLocator())
+        ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m'))
+        plt.xlabel('Time')
+        plt.ylabel('Inflation Rate')
+        plt.legend()
+        plt.xticks(rotation=45)
+        plt.tight_layout()
+        plt.title(f"Inflation Coefficient: {inflation_coefficient}, Initial Expected Inflation: {initial_expected_inflation}")
+        plt.show()
+
+        print('Expected inflation parameter:', expected_inflation)
+        print('Inflation coefficient:', inflation_coefficient)
+        print('------------------------------------')

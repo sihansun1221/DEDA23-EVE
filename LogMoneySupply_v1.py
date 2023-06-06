@@ -11,9 +11,9 @@ data = pd.read_csv('/Users/admin/Documents/GitHub/DEDA23-EVE/money_supply_onlyto
 money_supply = data['MoneySupply']
 
 # Define the parameters
-p_1 = 0.5
-p_2 = 0.3
-a = 0.1
+p_1 = 1.0
+p_2 = 1.0
+a = 0.5
 
 # Initialize the arrays for storing the simulated values
 T = len(money_supply)
