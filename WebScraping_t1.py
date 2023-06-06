@@ -18,6 +18,9 @@ def generate_monthly_url(month):
     url_template = "https://web.ccpgamescdn.com/aws/community/EVEOnline_MER_{}.zip"
     return url_template.format(month)
 
-# Example usage: Download and extract data for May 2023
-url = generate_monthly_url("Mar2023")
+# Prompt the user to enter the month
+month = input("Enter the month as 'Month20XX' (e.g. 'Mar2023'): ")
+
+# Generate the monthly URL based on user input
+url = generate_monthly_url(month)
 download_and_extract_zip(url)
